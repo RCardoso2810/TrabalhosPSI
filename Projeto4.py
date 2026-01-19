@@ -31,17 +31,19 @@ def transformar_texto(texto):
 
 def palavra_len(frase):
     frasel = len(frase)
-
     if frasel < 8:
         print(f"{y}A tua passe deve conter pelo menos 8 caracteres{r}")
+
         return False
     else:
         return True
 
 
 def exibir_menu():
+
     while True:
         frase = input("escreva sua palavra passe:")
+
 
         if palavra_len(frase):
             # Adiciona a frase ao histórico se for válida
@@ -51,7 +53,9 @@ def exibir_menu():
             frase_f = str(00) + frase + str(00) + "@"
             frase_m = transformar_texto(frase)
             frase_fo = transformar_texto(contrario)
-
+            historico_frases.append(frase_f)
+            historico_frases.append(frase_m)
+            historico_frases.append(frase_fo)
             print(f"{y}---{r}{g}Criador de passes{r} {y}---{r}")
             print(f"{g}1.Passe Fraca{r}")
             print(f"{y}2.Passe média{r}")
@@ -61,7 +65,7 @@ def exibir_menu():
             opcao = input(f"{g}Escolha uma opção:{r}")
 
             if opcao == "0":
-                print(f"{v}A sair até a próxima morcão{r}")
+                print(f"{v}A sair até a próxima {r}")
                 break
             elif opcao == "1":
                 print(frase_f)
@@ -77,10 +81,19 @@ def exibir_menu():
                     for i, registro in enumerate(historico_frases, 1):
                         print(f"{i}. {registro}")
                 print(f"{a}---------------------------{r}\n")
-            while True:
-                voltar=input("escreva voltar para ir para o menu")
+                while True:
+                    voltar=input("escreva voltar para ir para o menu")
+                    if voltar == "menu":
+                        break
+            else:
+                while True:
+                    print("Essa escolha é inválida")
+                    voltar = input("escreva voltar para ir para o menu")
+                    if voltar == "menu":
+                        break
 
 # Para correr o programa
 exibir_menu()
+
 
 
