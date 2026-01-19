@@ -40,8 +40,9 @@ def palavra_len(frase):
 
 
 def exibir_menu():
+    frase = input("escreva sua palavra passe:")
     while True:
-        frase = input("escreva sua palavra passe:")
+
 
         if palavra_len(frase):
             # Adiciona a frase ao histórico se for válida
@@ -58,16 +59,17 @@ def exibir_menu():
             print(f"{v}3. Passe Forte{r}")
             print(f"{y}0. Sair{r}")
 
-            opcao = input(f"{g}Escolha uma opção:{r}")
-
             if opcao == "0":
-                print(f"{v}A sair até a próxima morcão{r}")
+                print(f"{v}A sair até a próxima {r}")
                 break
             elif opcao == "1":
+                opcao = input(f"{g}Escolha uma opção:{r}")
                 print(frase_f)
             elif opcao == "2":
+                opcao = input(f"{g}Escolha uma opção:{r}")
                 print(frase_m)
             elif opcao == "3":
+                opcao = input(f"{g}Escolha uma opção:{r}")
                 print(frase_fo)
             elif opcao == "89":
                 print(f"\n{a}--- Registros de Frases ---{r}")
@@ -77,14 +79,11 @@ def exibir_menu():
                     for i, registro in enumerate(historico_frases, 1):
                         print(f"{i}. {registro}")
                 print(f"{a}---------------------------{r}\n")
-            while True:
-                voltar=input("escreva voltar para ir para o menu")
+                voltar=input("escreva voltar para ir para o menu:")
+                while True:
+                    if voltar =="menu":
+                        break
 
 # Para correr o programa
 exibir_menu()
 
-
-
-
-
-exibir_menu()
