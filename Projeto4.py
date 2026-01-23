@@ -53,9 +53,6 @@ def exibir_menu():
             frase_f = str(00) + frase + str(00) + "@"
             frase_m = transformar_texto(frase)
             frase_fo = transformar_texto(contrario)
-            historico_frases.append(frase_f)
-            historico_frases.append(frase_m)
-            historico_frases.append(frase_fo)
             print(f"{y}---{r}{g}Criador de passes{r} {y}---{r}")
             print(f"{g}1.Passe Fraca{r}")
             print(f"{y}2.Passe média{r}")
@@ -69,10 +66,13 @@ def exibir_menu():
                 break
             elif opcao == "1":
                 print(frase_f)
+                historico_frases.append(frase_f)
             elif opcao == "2":
                 print(frase_m)
+                historico_frases.append(frase_m)
             elif opcao == "3":
                 print(frase_fo)
+                historico_frases.append(frase_fo)
             elif opcao == "89":
                 print(f"\n{a}--- Registros de Frases ---{r}")
                 if not historico_frases:
@@ -94,6 +94,7 @@ def exibir_menu():
 
 # Para correr o programa
 exibir_menu()
+
 
 
 
