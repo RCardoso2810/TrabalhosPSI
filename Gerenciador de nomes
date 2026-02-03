@@ -61,7 +61,7 @@ def procurar_pessoa():
 def adicionar_nome():
     while True:
         try:
-            quantidade_nome = int(input(f"{amarelo_c}Quantas nomes quer inserir?{r} "))
+            quantidade_nome = int(input(f"{amarelo_c}Quantos nomes quer inserir?{r} "))
             if quantidade_nome <= 0:
                 print(f"{vermelho}Insira um número inteiro maior que {branco}{u}zero{r}.")
             else:
@@ -73,12 +73,13 @@ def adicionar_nome():
         while True:
             nome = input(f"{ciano_c}Insira o nome {i + 1}:{r} ").strip()
 
-            if not nome.isalpha():
-                print(f"{vermelho}Erro:{n}{vermelho_c}o nome só pode conter letras.{r}")
+            if not nome.replace(" ", "").isalpha():
+                print(f"{vermelho}Erro:{n}{vermelho_c} o nome não pode conter números.{r}")
                 continue
 
-            if not nome[0].isupper():
-                print(f"{vermelho}Erro:{n}{vermelho_c}o nome deve começar com letra grande.{r}")
+            partes = nome.split()
+            if not all(p[0].isupper() for p in partes):
+                print(f"{vermelho}Erro:{n}{vermelho_c} cada nome deve começar com letra grande.{r}")
                 continue
 
             break
@@ -103,14 +104,18 @@ def mostrar_pessoas():
 
 def menu_principal():
     while True:
+        print(f"""
+{azul_c}{n}╔══════════════════════════════════════╗
+║        📋  MENU PRINCIPAL  📋        ║
+╠══════════════════════════════════════╣
+║ {verde_c}[1]{branco_c} ➜ Adicionar Nome e Idade         ║
+║ {ciano_c}[2]{branco_c} ➜ Mostrar Pessoas                ║
+║ {amarelo_c}[3]{branco_c} ➜ Procurar Pessoa                ║
+║ {vermelho_c}[0]{branco_c} ➜ Sair                           ║
+╚══════════════════════════════════════╝{r}
+""")
 
-        print(f"{branco_c}[1] Adicionar Nome e Idade{r}")
-        print(f"{n}{azul_c}[2] Mostrar Pessoas{r}")
-        print(f"{n}{verde_c}[3] Procurar Pessoa{r}")
-        print(f"{n}{vermelho}[0] Sair{r}")
-
-        opcao = input(f"{i}{d}{branco_c}Escolha uma opção:{r} ")
-
+        opcao = input(f"{i}{branco_c}👉 Escolha uma opção: {r}")
 
         if opcao == "1":
             adicionar_nome()
@@ -119,10 +124,10 @@ def menu_principal():
         elif opcao == "3":
             procurar_pessoa()
         elif opcao == "0":
-            print("A sair...")
+            print(f"{vermelho}{n}A sair... Até breve 👋{r}")
             break
         else:
-            print(f"{vermelho}{n}Opção inválida!{r}")
+            print(f"{vermelho}{n}❌ Opção inválida!{r}")
 
 
 menu_principal()
