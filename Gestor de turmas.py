@@ -124,13 +124,21 @@ def adicionar_curso():
             print("Nome inválido (só letras, pode ter espaços, começa por maiúscula)")
 
 def remover_curso():
-    """Remove um curso existente."""
+    """Remove um curso e envia todos os alunos para 'alunos sem curso'."""
     curso = escolher_curso()
     if not curso:
         return
 
+    # Percorrer todas as turmas do curso
+    for turma in escola["cursos"][curso]["turmas"].values():
+        for turno in turma["alunos"]:
+            for aluno in turno:
+                escola["alunos_sem_curso"].append(aluno)
+
+    # Agora sim, remover o curso
     del escola["cursos"][curso]
-    print("Curso removido com sucesso")
+
+    print("Curso removido. Todos os alunos ficaram sem curso.")
 
 # ================= SELEÇÕES =================
 
