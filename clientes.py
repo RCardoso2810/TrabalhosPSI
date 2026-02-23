@@ -1,4 +1,3 @@
-# clientes.py
 import random
 
 nomes = ("João", "Maria", "Carlos", "Ana", "Rita", "Pedro", "Sofia", "Miguel")
@@ -16,8 +15,8 @@ def gerar_cliente(ronda):
     else:
         categoria = "Idoso"
 
-    chance_roubo = min(10 + ronda * 3, 50)
+    # Chance de roubo aleatória entre 5% e 70%
+    chance_roubo = random.randint(5, 70)
     e_ladrao = random.randint(1,100) <= chance_roubo
 
-    # Tuplo do cliente: (nome, idade, sexo, categoria, e_ladrao, banido, chateado, chance_roubo)
     return (nome, idade, sexo, categoria, e_ladrao, False, False, chance_roubo)
