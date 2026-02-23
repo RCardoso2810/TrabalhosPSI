@@ -1,7 +1,5 @@
-# dados.py
-dinheiro_inicial = 150.0  # Caixa inicial
+dinheiro_inicial = 150.0
 
-# Produtos (nome, preço, stock)
 produtos = [
     ("Maçã", 1.0, 10),
     ("Arroz", 2.0, 10),
