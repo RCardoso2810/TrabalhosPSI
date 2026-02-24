@@ -1,5 +1,12 @@
+# ================================
+# DADOS INICIAIS DO JOGO
+# ================================
+
+# Dinheiro inicial do jogador
 dinheiro_inicial = 150.0
 
+# Lista de produtos
+# Estrutura: (nome, preço, stock)
 produtos = [
     ("Maçã", 1.0, 10),
     ("Arroz", 2.0, 10),
