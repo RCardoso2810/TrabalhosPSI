@@ -1,9 +1,16 @@
+# ==========================================
+# IMPORTAÇÕES
+# ==========================================
+
 from dados import dinheiro_inicial, produtos
 from clientes import gerar_cliente
 from logica import mostrar_cliente, processar_compra, linha
 import random
 
-# Cores
+# ==========================================
+# CORES DO TERMINAL
+# ==========================================
+
 COR_RESET = '\033[0m'
 COR_TITULO = '\033[95m'
 COR_SUCESSO = '\033[92m'
@@ -11,7 +18,10 @@ COR_ERRO = '\033[91m'
 COR_AVISO = '\033[93m'
 COR_INFO = '\033[96m'
 
-# Lista de upgrades: (nome, preco, efeito)
+# ==========================================
+# LISTA DE UPGRADES
+# ==========================================
+
 upgrades = [
     ("Segurança Extra", 20, "reduz_roubo"),
     ("Promoção Produtos", 15, "mais_vendas"),
@@ -20,6 +30,10 @@ upgrades = [
 ]
 
 efeitos_ativos = []
+
+# ==========================================
+# ESCOLHER DIFICULDADE
+# ==========================================
 
 def escolher_dificuldade():
     while True:
@@ -33,6 +47,10 @@ def escolher_dificuldade():
         if op == "2": return 5
         if op == "3": return 10
 
+# ==========================================
+# MOSTRAR UPGRADES
+# ==========================================
+
 def mostrar_upgrades(caixa):
     linha()
     print(f"{COR_TITULO}UPGRADES DISPONÍVEIS{COR_RESET}")
@@ -41,6 +59,10 @@ def mostrar_upgrades(caixa):
         print(f"{i+1} - {nome} | Custo: {cor}{preco}€{COR_RESET}")
     print("0 - Nenhum")
     linha()
+
+# ==========================================
+# APLICAR UPGRADE
+# ==========================================
 
 def aplicar_upgrade(caixa, lista_produtos, efeitos_ativos):
     while True:
@@ -59,13 +81,18 @@ def aplicar_upgrade(caixa, lista_produtos, efeitos_ativos):
                     break
                 else:
                     print(f"{COR_ERRO}✖ Caixa insuficiente para {nome}!{COR_RESET}")
-    # Aplicar efeitos imediatos
+
     if "mais_stock" in efeitos_ativos:
         nova_lista = []
         for nome_p, preco_p, stock in lista_produtos:
             nova_lista.append((nome_p, preco_p, stock+5))
         lista_produtos[:] = nova_lista
+
     return caixa
+
+# ==========================================
+# FUNÇÃO PRINCIPAL
+# ==========================================
 
 def main():
 
@@ -73,9 +100,7 @@ def main():
     caixa = dinheiro_inicial
     lista_produtos = list(produtos)
     clientes_banidos = []
-
     lucro_total = 0
-    prejuizo_total = 0
 
     for ronda in range(1, rondas+1):
 
@@ -85,7 +110,6 @@ def main():
 
         numero_clientes = max(1, 3 + ronda)
 
-        # Eventos aleatórios
         evento = random.randint(1,100)
         if evento <= 20:
             print(f"{COR_AVISO}📉 Crise económica! -2 clientes{COR_RESET}")
@@ -100,21 +124,66 @@ def main():
             print(f"{COR_SUCESSO}🎁 Bónus fornecedor +15€{COR_RESET}")
             caixa += 15
 
-        # Sistema de upgrades entre rondas
+        # ==============================
+        # UPGRADES ENTRE RONDAS
+        # ==============================
         if ronda > 1:
             caixa = aplicar_upgrade(caixa, lista_produtos, efeitos_ativos)
+
+            # ==============================
+            # COMPRA DE STOCK ENTRE RONDAS
+            # ==============================
+            while True:
+                linha()
+                print(f"{COR_TITULO}📦 Comprar Stock?{COR_RESET}")
+                print("1 - Sim")
+                print("0 - Não")
+
+                op_stock = input("Escolha: ")
+
+                if op_stock == "0":
+                    break
+
+                elif op_stock == "1":
+
+                    linha()
+                    print(f"{COR_INFO}Produtos disponíveis:{COR_RESET}")
+                    for i, (nome_p, preco_p, stock_p) in enumerate(lista_produtos):
+                        print(f"{i+1} - {nome_p} | Preço: {preco_p}€ | Stock atual: {stock_p}")
+
+                    escolha_prod = input("Escolhe produto (número): ")
+
+                    if escolha_prod.isdigit():
+                        escolha_prod = int(escolha_prod) - 1
+
+                        if 0 <= escolha_prod < len(lista_produtos):
+
+                            nome_p, preco_p, stock_p = lista_produtos[escolha_prod]
+
+                            quantidade = input("Quantidade a comprar: ")
+
+                            if quantidade.isdigit():
+                                quantidade = int(quantidade)
+
+                                custo = round((preco_p * 0.5) * quantidade, 2)
+
+                                if caixa >= custo:
+                                    caixa -= custo
+                                    lista_produtos[escolha_prod] = (nome_p, preco_p, stock_p + quantidade)
+                                    print(f"{COR_SUCESSO}✔ Compraste {quantidade}x {nome_p}!{COR_RESET}")
+                                    print(f"{COR_AVISO}Custo: {custo}€{COR_RESET}")
+                                else:
+                                    print(f"{COR_ERRO}✖ Dinheiro insuficiente!{COR_RESET}")
 
         vendidos_ronda = 0
         roubos_ronda = 0
         dinheiro_ronda = 0
         clientes_insatisfeitos_ronda = 0
 
-        # Guardar os produtos e dinheiro de cada cliente antes de atualizar caixa
         for _ in range(numero_clientes):
 
             cliente = gerar_cliente(ronda)
 
-            # Aplicar efeito "reduz_roubo"
             if "reduz_roubo" in efeitos_ativos:
                 cliente = list(cliente)
                 cliente[7] = max(cliente[7]-15, 0)
@@ -124,7 +193,6 @@ def main():
 
             v, r, d, caixa_temp, ins = processar_compra(cliente, lista_produtos, 0, clientes_banidos)
 
-            # Aplicar efeito "mais_caixa"
             if "mais_caixa" in efeitos_ativos:
                 d += 2
 
@@ -133,19 +201,22 @@ def main():
             dinheiro_ronda += d
             clientes_insatisfeitos_ronda += ins
 
-        # Atualizar caixa **depois de processar todos os clientes**
         caixa += dinheiro_ronda
 
-        # Verificar derrota
-        motivo_perda = ""
-        if clientes_insatisfeitos_ronda > numero_clientes/2:
-            motivo_perda = "Muitos clientes insatisfeitos"
-        elif roubos_ronda > numero_clientes/3:
-            motivo_perda = "Muitos clientes roubaram"
-
-        if motivo_perda:
+        stock_total = sum(prod[2] for prod in lista_produtos)
+        if stock_total <= 0:
             linha()
-            print(f"{COR_ERRO}💀 GAME OVER! {motivo_perda}.{COR_RESET}")
+            print(f"{COR_ERRO}💀 GAME OVER! Ficou sem stock!{COR_RESET}")
+            break
+
+        if clientes_insatisfeitos_ronda > numero_clientes/2:
+            linha()
+            print(f"{COR_ERRO}💀 GAME OVER! Muitos clientes insatisfeitos.{COR_RESET}")
+            break
+
+        if roubos_ronda > numero_clientes/3:
+            linha()
+            print(f"{COR_ERRO}💀 GAME OVER! Muitos clientes roubaram.{COR_RESET}")
             break
 
         lucro_total += dinheiro_ronda
@@ -160,8 +231,10 @@ def main():
     print(f"{COR_TITULO}🏁 FIM DO JOGO{COR_RESET}")
     print(f"{COR_SUCESSO}Lucro total: {round(lucro_total,2)}€")
     print(f"{COR_INFO}Dinheiro final: {round(caixa,2)}€{COR_RESET}")
+
     if efeitos_ativos:
         print(f"{COR_TITULO}🔧 Upgrades comprados: {', '.join(efeitos_ativos)}{COR_RESET}")
+
     linha()
 
 if __name__ == "__main__":
