@@ -1,5 +1,8 @@
-import random
+import random  # Biblioteca para números aleatórios
 
+# ================================
+# CORES ANSI PARA O TERMINAL
+# ================================
 COR_RESET = '\033[0m'
 COR_TITULO = '\033[35m'
 COR_DESTAQUE = '\033[36m'
@@ -8,9 +11,11 @@ COR_ERRO = '\033[31m'
 COR_AVISO = '\033[33m'
 COR_TEXTO = '\033[37m'
 
+# Imprime uma linha decorativa
 def linha():
     print(f"{COR_DESTAQUE}" + "="*50 + f"{COR_RESET}")
 
+# Mostra informações do cliente
 def mostrar_cliente(cliente):
     nome, idade, sexo, categoria, e_ladrao, banido, chateado, chance_roubo = cliente
     linha()
@@ -18,22 +23,28 @@ def mostrar_cliente(cliente):
     print(f"{COR_TEXTO}Idade: {idade} | Sexo: {sexo} | Categoria: {categoria}{COR_RESET}")
     print(f"{COR_AVISO}Chance de roubo: {chance_roubo}%{COR_RESET}")
 
+# ==========================================
+# PROCESSA A COMPRA DE UM CLIENTE
+# ==========================================
 def processar_compra(cliente, produtos, caixa, clientes_banidos):
 
+    # Desempacotar cliente
     nome, idade, sexo, categoria, e_ladrao, banido, chateado, chance_roubo = cliente
 
+    # Variáveis de controlo
     vendidos = 0
     roubos = 0
     dinheiro_recebido = 0
     clientes_insatisfeitos = 0
 
-    # Verificar se é banido
+    # Verificar se cliente está banido
     foi_banido = False
     for b in clientes_banidos:
         if b[0] == nome:
             foi_banido = True
             break
 
+    # Se cliente banido voltar
     if foi_banido:
         print(f"{COR_ERRO}⚠ Cliente banido voltou!{COR_RESET}")
         while True:
@@ -47,7 +58,7 @@ def processar_compra(cliente, produtos, caixa, clientes_banidos):
             e_ladrao = True
             chance_roubo = min(chance_roubo + 30, 90)
 
-    # Determinar produtos que o cliente vai comprar
+    # Escolher produtos aleatórios
     n_produtos = random.randint(1,3)
     lista_compra = []
 
@@ -61,11 +72,12 @@ def processar_compra(cliente, produtos, caixa, clientes_banidos):
             quantidade = random.randint(2,5)
         lista_compra.append((idx, nome_p, preco, quantidade, stock))
 
+    # Se nenhum produto disponível
     if not lista_compra:
         print("Cliente não comprou nada.")
         return vendidos, roubos, dinheiro_recebido, caixa, clientes_insatisfeitos
 
-    # Mostrar produtos da compra
+    # Mostrar compra
     linha()
     print("🛒 Cliente vai comprar os seguintes produtos:")
     total = 0
@@ -76,12 +88,13 @@ def processar_compra(cliente, produtos, caixa, clientes_banidos):
     print(f"Total: {total:.3f}€")
     linha()
 
-    # Confrontar se quiser
+    # Perguntar se quer confrontar
     while True:
         conf = input("Confrontar cliente? (s/n): ").lower()
         if conf in ("s","n"):
             break
 
+    # Se confrontar
     if conf == "s":
         if e_ladrao:
             print("✔ Era ladrão! Pagou e foi banido.")
@@ -90,7 +103,7 @@ def processar_compra(cliente, produtos, caixa, clientes_banidos):
                 produtos[idx] = (nome_p, preco, stock-quantidade)
                 vendidos += quantidade
                 roubos += 1
-            caixa += total  # adiciona todo o dinheiro de uma vez
+            caixa += total
             dinheiro_recebido += total
             return vendidos, roubos, dinheiro_recebido, caixa, clientes_insatisfeitos
         else:
@@ -98,6 +111,7 @@ def processar_compra(cliente, produtos, caixa, clientes_banidos):
             clientes_insatisfeitos += 1
             return vendidos, roubos, dinheiro_recebido, caixa, clientes_insatisfeitos
 
+    # Se não confrontar e for ladrão
     if e_ladrao:
         print("💀 Roubou produtos!")
         for idx, nome_p, preco, quantidade, stock in lista_compra:
@@ -106,10 +120,11 @@ def processar_compra(cliente, produtos, caixa, clientes_banidos):
             clientes_insatisfeitos += 1
         return vendidos, roubos, dinheiro_recebido, caixa, clientes_insatisfeitos
 
-    # Pagamento: cliente sempre dá até décimas
+    # Pagamento normal
     extra = random.choice([0, 0.1, 0.2, 0.3, 0.5, 1, 2, 5])
     valor_cliente = round(total + extra, 3)
     troco_correto = round(valor_cliente - total, 3)
+
     print(f"Cliente deu: {valor_cliente:.3f}€")
 
     while True:
@@ -136,7 +151,6 @@ def processar_compra(cliente, produtos, caixa, clientes_banidos):
         print("Troco correto!")
         caixa -= troco_correto
 
-    # Atualizar stock e vendas após pagamento
     for idx, nome_p, preco, quantidade, stock in lista_compra:
         produtos[idx] = (nome_p, preco, stock-quantidade)
         vendidos += quantidade
@@ -145,5 +159,3 @@ def processar_compra(cliente, produtos, caixa, clientes_banidos):
     dinheiro_recebido += total
 
     return vendidos, roubos, dinheiro_recebido, caixa, clientes_insatisfeitos
-
-    return vendidos, roubos, dinheiro_recebido, caixa, cliente
