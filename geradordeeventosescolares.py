@@ -1,29 +1,24 @@
 from gestor import GestorEvento
 from evento import Evento
+from datetime import date
 
 
-def validar_nome():
+def validar_data(msg):
     while True:
-        nome = input("Nome do evento (apenas letras): ")
-        if nome.isalpha(): return nome
-        print("Erro: Use apenas letras.")
-
-
-def validar_data():
-    while True:
-        txt = input("Data (DD|MM|AAAA): ")
+        txt = input(f"{msg} (DD|MM|AAAA) ou '0' para voltar: ")
+        if txt == '0': return '0'
         p = txt.split("|")
         if len(p) == 3 and all(i.isdigit() for i in p):
             d, m, a = map(int, p)
-            if 1 <= d <= 31 and 1 <= m <= 12: return (d, m, a)
-        print("Erro: Use o formato DD|MM|AAAA.")
+            return (d, m, a)
+        print("\033[91mErro: Use o formato DD|MM|AAAA.\033[0m")
 
 
 def main():
     gestor = GestorEvento()
 
     while True:
-        print(f"\n[ HOJE: {gestor.dia_atual_sistema.strftime('%d/%m/%Y')} ]")
+        print(f"\n\033[96m[ HOJE: {gestor.dia_atual_sistema.strftime('%d/%m/%Y')} ]\033[0m")
         print("1 - Criar Evento")
         print("2 - Ver Eventos")
         print("3 - Configurar Turmas")
@@ -35,13 +30,22 @@ def main():
         opcao = input("Escolha: ")
 
         if opcao == "1":
-            nome = validar_nome()
-            data = validar_data()
+            nome = input("Nome do evento (0 para voltar): ").strip().upper()
+            if nome == '0': continue
+            data_e = validar_data("Data do evento")
+            if data_e == '0': continue
+            data_l = validar_data("Data limite de pagamento")
+            if data_l == '0': continue
+
+            # Validação: Data limite não pode ser depois do evento
+            if date(data_l[2], data_l[1], data_l[0]) > date(data_e[2], data_e[1], data_e[0]):
+                print("\033[91mErro: A data limite não pode ser depois do evento!\033[0m")
+                continue
             try:
                 preco = float(input("Preço: "))
-                gestor.criar_evento(Evento(nome, data, 0, 0, preco))
+                gestor.criar_evento(Evento(nome, data_e, data_l, 0, 0, preco))
             except:
-                print("Preço inválido.")
+                print("\033[91mPreço inválido.\033[0m")
 
         elif opcao == "2":
             gestor.listar_eventos()
@@ -51,28 +55,37 @@ def main():
 
         elif opcao == "4":
             if not gestor.evento_atual: print("Crie evento!"); continue
-            print("1. Novo Aluno | 2. Pagamento | 3. Desistência")
+            print("1. Novo Aluno | 2. Pagamento | 3. Desistência | 0. Voltar")
             sub = input("Opção: ")
-            if sub == "1":
-                if not gestor.turmas: print("Configure turmas primeiro!"); continue
-                n = input("Nome: ")
-                for i, t in enumerate(gestor.turmas): print(i, "-", t)
-                gestor.adicionar_aluno(n, int(input("Turma: ")))
-            elif sub == "2":
-                for i, a in enumerate(gestor.alunos): print(i, "-", a.nome)
-                idx = int(input("ID: "))
-                gestor.alunos[idx].adicionar_pagamento(float(input("Valor: ")))
-            elif sub == "3":
-                for i, a in enumerate(gestor.alunos): print(i, "-", a.nome)
-                idx = int(input("ID: "))
-                gestor.alunos[idx].marcar_presenca(False)
+            if sub == "0": continue
+            try:
+                if sub == "1":
+                    if not gestor.turmas: print("Configure turmas primeiro!"); continue
+                    n = input("Nome (0 para voltar): ").strip().upper()
+                    if n == '0': continue
+                    lt = sorted(list(gestor.turmas))
+                    for i, t in enumerate(lt): print(i, "-", t)
+                    gestor.adicionar_aluno(n, int(input("Turma: ")))
+                elif sub == "2":
+                    for i, a in enumerate(gestor.alunos): print(i, "-", a.nome)
+                    idx = int(input("ID: "))
+                    gestor.alunos[idx].adicionar_pagamento(float(input("Valor: ")))
+                elif sub == "3":
+                    for i, a in enumerate(gestor.alunos): print(i, "-", a.nome)
+                    idx = int(input("ID: "))
+                    gestor.alunos[idx].marcar_presenca(False)
+            except:
+                print("\033[91mErro nos dados inseridos.\033[0m")
 
         elif opcao == "5":
             gestor.ver_estatisticas()
 
         elif opcao == "6":
-            dias = int(input("Quantos dias avançar? "))
-            gestor.avancar_tempo(dias)
+            try:
+                dias = int(input("Quantos dias avançar? (0 para voltar): "))
+                if dias != 0: gestor.avancar_tempo(dias)
+            except:
+                print("\033[91mErro: Digite um número.\033[0m")
 
         elif opcao == "7":
             break
@@ -80,4 +93,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-  
