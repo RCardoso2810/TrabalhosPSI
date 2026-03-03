@@ -1,6 +1,6 @@
 class Aluno:
     def __init__(self, nome, turma):
-        self.nome = nome
+        self.nome = nome.strip().upper()
         self.turma = turma
         self.vai_evento = True
         self.pagamentos = 0.0
