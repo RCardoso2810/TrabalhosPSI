@@ -6,11 +6,27 @@ from datetime import date
 def validar_data(msg):
     while True:
         txt = input(f"{msg} (DD|MM|AAAA) ou '0' para voltar: ")
-        if txt == '0': return '0'
+
+        if txt == '0':
+            return '0'
+
         p = txt.split("|")
+
         if len(p) == 3 and all(i.isdigit() for i in p):
             d, m, a = map(int, p)
+
+            # LIMITADOR DO MÊS
+            if m < 1 or m > 12:
+                print("\033[91mErro: O mês deve estar entre 1 e 12.\033[0m")
+                continue
+
+            # LIMITADOR DO DIA
+            if d < 1 or d > 31:
+                print("\033[91mErro: O dia deve estar entre 1 e 31.\033[0m")
+                continue
+
             return (d, m, a)
+
         print("\033[91mErro: Use o formato DD|MM|AAAA.\033[0m")
 
 
@@ -34,6 +50,12 @@ def main():
             if nome == '0': continue
             data_e = validar_data("Data do evento")
             if data_e == '0': continue
+
+            # NOVA VALIDAÇÃO: impedir evento antes de hoje
+            data_evento_obj = date(data_e[2], data_e[1], data_e[0])
+            if data_evento_obj < gestor.dia_atual_sistema:
+                print("\033[91mErro: A data do evento não pode ser anterior ao dia atual!\033[0m")
+                continue
             data_l = validar_data("Data limite de pagamento")
             if data_l == '0': continue
 
@@ -43,7 +65,7 @@ def main():
                 continue
             try:
                 preco = float(input("Preço: "))
-                gestor.criar_evento(Evento(nome, data_e, data_l, 0, 0, preco))
+                gestor.criar_evento(Evento(nome, data_e, data_l, preco))
             except:
                 print("\033[91mPreço inválido.\033[0m")
 
@@ -83,7 +105,7 @@ def main():
         elif opcao == "6":
             try:
                 dias = int(input("Quantos dias avançar? (0 para voltar): "))
-                if dias != 0: gestor.avancar_tempo(dias)
+                if  dias != 0:gestor.avancar_tempo(dias)
             except:
                 print("\033[91mErro: Digite um número.\033[0m")
 
